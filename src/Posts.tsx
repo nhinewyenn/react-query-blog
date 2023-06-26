@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { PostDetail } from './PostDetails';
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
 import '../src/App.css';
 const maxPostPage = 10;
 

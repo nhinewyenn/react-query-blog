@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import './App.css';
 import { Posts } from './Posts';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const qc = new QueryClient();
