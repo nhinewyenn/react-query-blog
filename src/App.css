@@ -1,0 +1,22 @@
+/** @format */
+
+#root {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.pages {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button {
+  color: #fff;
+}
+
+button:hover {
+  color: #8e8c8c;
+}
