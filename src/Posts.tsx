@@ -29,6 +29,7 @@ export function Posts() {
   const { data, isError, isLoading, error } = useQuery({
     queryKey: ['posts'],
     queryFn: fetchPosts,
+    staleTime: 2000,
   });
 
   if (isLoading) return <h3>Loading data...</h3>;
@@ -39,6 +40,9 @@ export function Posts() {
         <p>{error.toString()}</p>
       </>
     );
+  if (!data) {
+    throw new Error('No data returned');
+  }
 
   return (
     <>
@@ -73,7 +77,14 @@ export function Posts() {
         </button>
       </div>
       <hr />
-      {selectedPost && <PostDetail post={selectedPost} />}
+      {selectedPost && (
+        <PostDetail
+          postId={selectedPost.id}
+          id={selectedPost.userID}
+          body={`${selectedPost.body}`}
+          name={`${selectedPost.title}`}
+        />
+      )}
     </>
   );
 }
