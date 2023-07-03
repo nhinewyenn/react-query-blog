@@ -33,13 +33,14 @@ export function Posts() {
   });
 
   if (isLoading) return <h3>Loading data...</h3>;
-  if (isError && error)
+  if (isError && error) {
     return (
       <>
         <h3>Oops, something went wrong</h3>
         <p>{error.toString()}</p>
       </>
     );
+  }
   if (!data) {
     throw new Error('No data returned');
   }

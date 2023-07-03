@@ -1,5 +1,7 @@
 /** @format */
 
+import { useQuery } from '@tanstack/react-query';
+
 export type Post = {
   postId: number;
   id: number;
@@ -10,24 +12,24 @@ export type Post = {
 
 export type PostsProps = Post[];
 
-async function fetchComments(post: Post) {
+async function fetchComments(post: number) {
   const response = await fetch(
-    `https://jsonplaceholder.typicode.com/comments?postId=${post.body}`
+    `https://jsonplaceholder.typicode.com/comments?postId=${post}`
   );
   return response.json();
 }
 
-async function deletePost(post: Post) {
+async function deletePost(post: number) {
   const response = await fetch(
-    `https://jsonplaceholder.typicode.com/postId/${post.id}`,
+    `https://jsonplaceholder.typicode.com/postId/${post}`,
     { method: 'DELETE' }
   );
   return response.json();
 }
 
-async function updatePost(post: Post) {
+async function updatePost(post: number) {
   const response = await fetch(
-    `https://jsonplaceholder.typicode.com/posts/${post.id}`,
+    `https://jsonplaceholder.typicode.com/posts/${post}`,
     {
       method: 'PATCH',
       headers: {
@@ -40,8 +42,20 @@ async function updatePost(post: Post) {
 }
 
 export function PostDetail({ ...props }: Post) {
-  // replace with useQuery
-  const data: PostsProps = [];
+  const { data, isError, isLoading, error } = useQuery({
+    queryKey: ['comments', props.id],
+    queryFn: () => fetchComments(props.postId),
+  });
+
+  if (isLoading) return <h3>Loading data...</h3>;
+  if (isError && error) {
+    return (
+      <>
+        <h3>Oops, something went wrong</h3>
+        <p>{error.toString()}</p>
+      </>
+    );
+  }
 
   return (
     <>
@@ -49,11 +63,17 @@ export function PostDetail({ ...props }: Post) {
       <button>Delete</button> <button>Update title</button>
       <p>{props.name}</p>
       <h4>Comments</h4>
-      {data.map((comment) => (
-        <li key={comment.id}>
-          {comment.email}: {comment.body}
-        </li>
-      ))}
+      {data.map((comment: any) => {
+        if (!comment) {
+          throw new Error('No data returned');
+        }
+
+        return (
+          <li key={comment.id}>
+            {comment.email}: {comment.body}
+          </li>
+        );
+      })}
     </>
   );
 }
