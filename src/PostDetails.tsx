@@ -43,7 +43,7 @@ async function updatePost(post: number) {
 
 export function PostDetail({ ...props }: Post) {
   const { data, isError, isLoading, error } = useQuery({
-    queryKey: ['comments', props.id],
+    queryKey: ['comments', props.postId],
     queryFn: () => fetchComments(props.postId),
   });
 
