@@ -47,20 +47,25 @@ export function PostDetail({ ...props }: Post) {
     queryFn: () => fetchComments(props.postId),
   });
 
-  if (isLoading) return <h3>Loading data...</h3>;
-  if (isError && error) {
+  if (isLoading) { 
+    throw new Error('No data available')
+    } else if (isError && error) {
     return (
       <>
         <h3>Oops, something went wrong</h3>
         <p>{error.toString()}</p>
       </>
     );
+  } else return null
+
+  function handleSubmit(e: Post) {
+  throw new Error("Not implemented")
   }
 
   return (
     <>
-      <h3 style={{ color: 'wheat' }}>{props.body}</h3>
-      <button>Delete</button> <button>Update title</button>
+      <h3 style={{ color: 'red' }}>{props.body}</h3>
+      <button onClick={() => alert('Delete title')>Delete</button> <button onClick={() => alert('Title updated')}>Update title</button>
       <p>{props.name}</p>
       <h4>Comments</h4>
       {data.map((comment: any) => {
