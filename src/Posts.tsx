@@ -1,8 +1,8 @@
 /** @format */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PostDetail } from './PostDetails';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import '../src/App.css';
 const maxPostPage = 10;
 
@@ -15,24 +15,37 @@ export type PostProps = {
 
 export type PostsProps = PostProps[];
 
-async function fetchPosts(): Promise<PostsProps> {
+async function fetchPosts(pageNumber: number): Promise<PostsProps> {
   const response = await fetch(
-    `https://jsonplaceholder.typicode.com/posts?_limit=10&_page=0`
+    `https://jsonplaceholder.typicode.com/posts?_limit=10&_page=${pageNumber}`
   );
   return response.json();
 }
 
 export function Posts() {
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedPost, setSelectedPost] = useState<PostProps>();
 
-  const { data, isError, isLoading, error } = useQuery({
-    queryKey: ['posts'],
-    queryFn: fetchPosts,
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    if (currentPage < maxPostPage) {
+      const nextPage = currentPage + 1;
+      qc.prefetchQuery({
+        queryKey: ['posts', nextPage],
+        queryFn: () => fetchPosts(nextPage),
+      });
+    }
+  }, [currentPage, qc]);
+
+  const { data, isError, error, isFetching } = useQuery({
+    queryKey: ['posts', currentPage],
+    queryFn: () => fetchPosts(currentPage),
     staleTime: 2000,
+    keepPreviousData: true,
   });
 
-  if (isLoading) return <h3>Loading data...</h3>;
+  if (isFetching) return <h3>Fetching data in progress...</h3>;
   if (isError && error) {
     return (
       <>
@@ -41,6 +54,8 @@ export function Posts() {
       </>
     );
   }
+
+  console.log(data);
   if (!data) {
     throw new Error('No data returned');
   }
@@ -60,18 +75,16 @@ export function Posts() {
       </ul>
       <div className='pages'>
         <button
-          disabled
-          onClick={() => {
-            console.log('Previous page');
-          }}
+          disabled={currentPage <= 1}
+          onClick={() => setCurrentPage((oldData) => oldData - 1)}
         >
           Previous page
         </button>
-        <span>Page {currentPage + 1}</span>
+        <span>Page {currentPage}</span>
         <button
-          disabled
+          disabled={currentPage >= maxPostPage}
           onClick={() => {
-            console.log('Next page');
+            setCurrentPage((oldData) => oldData + 1);
           }}
         >
           Next page
