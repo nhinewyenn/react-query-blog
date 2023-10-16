@@ -7,6 +7,6 @@
 
 # To run
 - clone the project
-- make sure you have `yarn` installed
+- make sure you have `yarn` installed https://classic.yarnpkg.com/lang/en/docs/install/#mac-stable
 - run `yarn install`
 - run `yarn dev`
